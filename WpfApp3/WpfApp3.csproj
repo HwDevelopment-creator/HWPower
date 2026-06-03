@@ -22,9 +22,9 @@
 		<RootNamespace>AlbiOptimization</RootNamespace>
 		<ApplicationIcon>Configuration\Resources\ICO ALBERT.ico</ApplicationIcon>
 
-		<AssemblyVersion>2.9.0.0</AssemblyVersion>
-		<FileVersion>2.9.0.0</FileVersion>
-		<Version>2.9.0</Version>
+		<AssemblyVersion>3.0.0.0</AssemblyVersion>
+		<FileVersion>3.0.0.0</FileVersion>
+		<Version>3.0.0</Version>
 		<Product>Albi Optimizer</Product>
 		<Company>HWDevelopment</Company>
 		<Copyright>Copyright (c) HWDevelopment</Copyright>
@@ -75,10 +75,8 @@
 
 	<!-- ===== Folder hints ===== -->
 	<ItemGroup>
-		<Folder Include="SourceCode\" />
 		<Folder Include="SourceCode\Models\" />
 		<Folder Include="SourceCode\Services\" />
-		<Folder Include="SourceCode\Utilities\" />
 		<Folder Include="SourceCode\Views\" />
 		<Folder Include="Configuration\" />
 		<Folder Include="Configuration\Assets\" />
@@ -87,3 +85,7 @@
 	</ItemGroup>
 
 </Project>
+
+
+
+
