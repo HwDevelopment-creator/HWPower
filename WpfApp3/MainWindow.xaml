@@ -1,0 +1,2158 @@
+﻿<!--
+    Albi Optimizer - MainWindow.xaml (polished)
+    Polish pass: palette piu' moderna (graphite + brand cyan intatto),
+    shadow piu' morbide e diffuse, card radius leggermente piu' ampio.
+    Struttura, x:Name, ControlTemplate e binding lasciati invariati per
+    garantire compatibilita' col code-behind MainWindow.xaml.cs.
+-->
+<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    
+        Title="Albi Optimizer" Height="940" Width="1480"
+        MinHeight="740" MinWidth="1220"
+        WindowStartupLocation="CenterScreen"
+        Background="#080B14"
+        FontFamily="Segoe UI Variable Text, Segoe UI"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True">
+
+    <Window.Resources>
+        <!-- ============ PALETTE (graphite + amber/lime) ============ -->
+        <SolidColorBrush x:Key="Bg"         Color="#080B14"/>
+        <SolidColorBrush x:Key="Panel"      Color="#101626"/>
+        <SolidColorBrush x:Key="PanelAlt"   Color="#141C2E"/>
+        <SolidColorBrush x:Key="PanelHi"    Color="#1C2536"/>
+        <SolidColorBrush x:Key="Border"     Color="#22304A"/>
+        <SolidColorBrush x:Key="BorderHi"   Color="#3A4A66"/>
+        <SolidColorBrush x:Key="Text"       Color="#EAF0FA"/>
+        <SolidColorBrush x:Key="TextMuted"  Color="#8FA0BC"/>
+        <SolidColorBrush x:Key="TextDim"    Color="#5A6678"/>
+        <SolidColorBrush x:Key="Accent"     Color="#38BDF8"/>
+        <SolidColorBrush x:Key="Accent2"    Color="#34D399"/>
+        <SolidColorBrush x:Key="AccentPink" Color="#F472B6"/>
+        <SolidColorBrush x:Key="Good"       Color="#34D399"/>
+        <SolidColorBrush x:Key="Warn"       Color="#FBBF24"/>
+        <SolidColorBrush x:Key="Bad"        Color="#F87171"/>
+        <SolidColorBrush x:Key="Info"       Color="#60A5FA"/>
+
+        <LinearGradientBrush x:Key="AccentGrad" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#38BDF8" Offset="0"/>
+            <GradientStop Color="#22D3EE" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="HeaderGrad" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#121826" Offset="0"/>
+            <GradientStop Color="#161E2E" Offset="1"/>
+        </LinearGradientBrush>
+
+        <DropShadowEffect x:Key="GlowAccent" Color="#38BDF8" BlurRadius="26" ShadowDepth="0" Opacity="0.55"/>
+        <DropShadowEffect x:Key="CardShadow" Color="#000000" BlurRadius="30" ShadowDepth="6" Opacity="0.42"/>
+
+        <!-- ============ TOOLTIP ============ -->
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="#161E2E"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderHi}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="11,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="HasDropShadow" Value="True"/>
+            <Setter Property="MaxWidth" Value="380"/>
+        </Style>
+
+        <!-- ============ NAV BUTTON ============ -->
+        <Style x:Key="NavButton" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{StaticResource TextMuted}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="Margin" Value="8,2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="b" Background="{TemplateBinding Background}"
+                                CornerRadius="10" Padding="{TemplateBinding Padding}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border x:Name="bar" Grid.Column="0" Width="3" CornerRadius="2" Background="Transparent"/>
+                                <ContentPresenter Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#161E2E"/>
+                                <Setter Property="Foreground" Value="{StaticResource Text}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#1F2937"/>
+                                <Setter TargetName="bar" Property="Background" Value="{StaticResource AccentGrad}"/>
+                                <Setter Property="Foreground" Value="{StaticResource Text}"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ============ BUTTONS ============ -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource AccentGrad}"/>
+            <Setter Property="Foreground" Value="#06121F"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}"
+                                CornerRadius="9" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextBlock.FontWeight="SemiBold"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Effect" Value="{StaticResource GlowAccent}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="b" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="b" Property="Background" Value="#161E2E"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextMuted}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="GhostButton"  TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Background" Value="#1F2937"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        </Style>
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Background" Value="{StaticResource Bad}"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style x:Key="WarnButton"   TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Background" Value="{StaticResource Warn}"/>
+            <Setter Property="Foreground" Value="#06121F"/>
+        </Style>
+        <Style x:Key="GoodButton"   TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Background" Value="{StaticResource Good}"/>
+            <Setter Property="Foreground" Value="#06121F"/>
+        </Style>
+        <Style x:Key="MicroButton"  TargetType="Button" BasedOn="{StaticResource GhostButton}">
+            <Setter Property="Padding" Value="9,5"/>
+            <Setter Property="FontSize" Value="11.5"/>
+        </Style>
+
+        <!-- ============ CARD ============ -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Panel}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource BorderHi}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ============ INPUTS ============ -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="{StaticResource PanelAlt}"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="CaretBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="11,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="SelectionBrush" Value="{StaticResource Accent}"/>
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!-- ============ COMBOBOX (dark, leggibile) ============ -->
+        <!-- ToggleButton interno trasparente: tutta la grafica la disegna il template del ComboBox -->
+        <Style x:Key="ComboToggleButton" TargetType="ToggleButton">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="ClickMode" Value="Press"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="Transparent"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Stile delle voci del menu a tendina: sfondo scuro + testo chiaro, niente bianco-su-bianco -->
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="ItemBd"
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                CornerRadius="5" Margin="3,1">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBd" Property="Background" Value="{StaticResource PanelHi}"/>
+                            </Trigger>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="ItemBd" Property="Background" Value="{StaticResource PanelHi}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBd" Property="Background" Value="#0E2A3A"/>
+                                <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="Background" Value="{StaticResource PanelAlt}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton"
+                                          Style="{StaticResource ComboToggleButton}"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <Border x:Name="MainBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ContentPresenter x:Name="ContentSite"
+                                                      Margin="{TemplateBinding Padding}"
+                                                      VerticalAlignment="Center"
+                                                      HorizontalAlignment="Left"
+                                                      Content="{TemplateBinding SelectionBoxItem}"
+                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                      ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                                      IsHitTestVisible="False"
+                                                      TextElement.Foreground="{TemplateBinding Foreground}"/>
+                                    <Path Grid.Column="1" Margin="0,0,12,0"
+                                          VerticalAlignment="Center"
+                                          Data="M0,0 L8,0 L4,5 Z"
+                                          Fill="{StaticResource TextMuted}"/>
+                                </Grid>
+                            </Border>
+                            <Popup x:Name="Popup" Placement="Bottom"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Slide">
+                                <Border x:Name="DropDownBorder"
+                                        MinWidth="{Binding ActualWidth, ElementName=MainBorder}"
+                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                        Background="{StaticResource Panel}"
+                                        BorderBrush="{StaticResource BorderHi}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Margin="0,4,0,4"
+                                        Effect="{StaticResource CardShadow}">
+                                    <ScrollViewer>
+                                        <StackPanel IsItemsHost="True"
+                                                    KeyboardNavigation.DirectionalNavigation="Contained"
+                                                    Margin="2"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="MainBorder" Property="BorderBrush" Value="{StaticResource BorderHi}"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="MainBorder" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- ============ DATAGRID ============ -->
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="RowBackground" Value="Transparent"/>
+            <Setter Property="AlternatingRowBackground" Value="#10FFFFFF"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="SelectionMode" Value="Extended"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+            <Setter Property="RowHeight" Value="32"/>
+        </Style>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#161E2E"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMuted}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="Padding" Value="14,9"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        </Style>
+        <Style TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="14,4"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#0E2A3A"/>
+                    <Setter Property="Foreground" Value="{StaticResource Text}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="DataGridRow">
+            <Setter Property="Background" Value="Transparent"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#14FFFFFF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ============ PROGRESS ============ -->
+        <Style TargetType="ProgressBar">
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="Foreground" Value="{StaticResource AccentGrad}"/>
+            <Setter Property="Background" Value="#161E2E"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                            <Grid ClipToBounds="True">
+                                <Border x:Name="PART_Track"/>
+                                <Border x:Name="PART_Indicator"
+                                        HorizontalAlignment="Left"
+                                        Background="{TemplateBinding Foreground}"
+                                        CornerRadius="4"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ============ SCROLLBAR ============ -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="10"/>
+        </Style>
+
+        <!-- ============ TEXT STYLES ============ -->
+        <Style x:Key="StatLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextMuted}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,2"/>
+        </Style>
+        <Style x:Key="StatValue" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,4,0,8"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        </Style>
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style x:Key="SectionSub" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextMuted}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,4,0,12"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ============ SIDEBAR ============ -->
+        <Border Grid.RowSpan="2" Background="#0E1320" BorderBrush="{StaticResource Border}" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <!-- LOGO -->
+                <Border DockPanel.Dock="Top" Padding="18,22,18,16">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="42" Height="42" CornerRadius="12" Background="Transparent" BorderThickness="0" Padding="0">
+                            <Image x:Name="LogoImage" Source="file:///C:/Users/frang/source/repos/Release/net8.0-windows/Configuration/Assets/ChatGPT Image 2 giu 2026, 13_55_40.png" Width="42" Height="42" Stretch="UniformToFill"
+                                   HorizontalAlignment="Left" VerticalAlignment="Top"
+                                   RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True"
+                                   Margin="0"/>
+                        </Border>
+                        <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Foreground="{StaticResource Text}" FontWeight="Bold" FontSize="15"><Run Language="it-it" Text="HwPower™"/></TextBlock>
+                            <TextBlock Foreground="{StaticResource Accent}" FontSize="10" FontWeight="SemiBold"><Run Text=" "/><Run Language="it-it" Text=" "/><Run Text="v"/><Run Text="2.7 - Stable"/></TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- ADMIN BADGE -->
+                <Border DockPanel.Dock="Top" x:Name="AdminBadge" Margin="12,0,12,12" Padding="11,8" CornerRadius="8"
+                        Background="#0E2030" BorderBrush="{StaticResource Warn}" BorderThickness="1" Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⚠" Foreground="{StaticResource Warn}" FontSize="14" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="AdminBadgeText" Text="Non amministratore"
+                                   Foreground="{StaticResource Warn}" FontSize="11.5" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,0,0,16">
+                        <TextBlock Text="GENERALE" Foreground="{StaticResource TextDim}" FontSize="10" FontWeight="Bold" Margin="22,4,0,6"/>
+                        <RadioButton x:Name="NavDash"     Style="{StaticResource NavButton}" IsChecked="True" Content="🏠   Dashboard"  Click="NavDash_Click"/>
+                        <RadioButton x:Name="NavProc"     Style="{StaticResource NavButton}" Content="📋   Processi"  Click="NavProc_Click"/>
+                        <RadioButton x:Name="NavServices" Style="{StaticResource NavButton}" Content="⚙   Servizi"   Click="NavServices_Click"/>
+
+                        <TextBlock Text="OTTIMIZZAZIONE" Foreground="{StaticResource TextDim}" FontSize="10" FontWeight="Bold" Margin="22,16,0,6"/>
+                        <RadioButton x:Name="NavTools"    Style="{StaticResource NavButton}" Content="🧰   Tools"           Click="NavTools_Click"/>
+                        <RadioButton x:Name="NavPower"    Style="{StaticResource NavButton}" Content="⚡   Power &amp; CPU" Click="NavPower_Click" Checked="NavPower_Checked"/>
+                        <RadioButton x:Name="NavIntelppm" Style="{StaticResource NavButton}" Content="🔧   IntelPPM Editor" Click="NavIntelppm_Click"/>
+                        <RadioButton x:Name="NavNetwork"  Style="{StaticResource NavButton}" Content="🌐   Network"         Click="NavNetwork_Click"/>
+                        <RadioButton x:Name="NavDebloat"  Style="{StaticResource NavButton}" Content="🧹   Debloat"         Click="NavDebloat_Click"/>
+                        <RadioButton x:Name="NavStartup"  Style="{StaticResource NavButton}" Content="🚀   Startup"         Click="NavStartup_Click"/>
+
+                        <TextBlock Text="SISTEMA" Foreground="{StaticResource TextDim}" FontSize="10" FontWeight="Bold" Margin="22,16,0,6"/>
+                        <RadioButton x:Name="NavSystem"   Style="{StaticResource NavButton}" Content="🩺   Diagnostica"  Click="NavSystem_Click"/>
+                        <RadioButton x:Name="NavDrivers"  Style="{StaticResource NavButton}" Content="🎮   Driver Hub"    Click="NavDrivers_Click"/>
+
+                        <RadioButton x:Name="NavLog"      Style="{StaticResource NavButton}" Content="📜   Log completo" Click="NavLog_Click" Checked="NavLog_Checked_1"/>
+                        <RadioButton x:Name="NavInfo"     Style="{StaticResource NavButton}" Content="ℹ   Info / Guida"  Click="NavInfo_Click"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- ============ MAIN ============ -->
+        <Grid Grid.Column="1">
+            <DockPanel LastChildFill="True">
+                <!-- HEADER -->
+                <Border DockPanel.Dock="Top" Background="{StaticResource HeaderGrad}" BorderBrush="{StaticResource Border}" BorderThickness="0,0,0,1" Padding="24,14">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Border Padding="10,6" Margin="0,0,8,0" CornerRadius="6" Background="#161E2E" BorderBrush="{StaticResource Border}" BorderThickness="1">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="{StaticResource Good}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <TextBlock x:Name="HeaderHost" Text="--" Foreground="{StaticResource Text}" FontSize="12" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Padding="10,6" CornerRadius="6" Background="#161E2E" BorderBrush="{StaticResource Border}" BorderThickness="1">
+                                <TextBlock x:Name="HeaderClock" Text="--:--" Foreground="{StaticResource TextMuted}" FontSize="12" FontFamily="Cascadia Mono, Consolas"/>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock x:Name="HeaderTitle" Text="Dashboard" Foreground="{StaticResource Text}" FontSize="21" FontWeight="Bold"/>
+                            <TextBlock x:Name="HeaderSub" Text="Monitor live + azioni rapide" Foreground="{StaticResource TextMuted}" FontSize="12.5"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- BODY -->
+                <Grid Margin="24">
+
+                    <!-- ============ DASHBOARD ============ -->
+                    <Grid x:Name="ViewDashboard">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- TOP STATS -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource Card}" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource StatLabel}" Text="CPU"/>
+                                    <TextBlock x:Name="CpuValue" Style="{StaticResource StatValue}" Foreground="{StaticResource Accent}" Text="--"/>
+                                    <TextBlock x:Name="CpuPct" Text="0%" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <ProgressBar x:Name="CpuBar" Maximum="100"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource Card}" Grid.Column="1" Margin="6,0">
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource StatLabel}" Text="RAM"/>
+                                    <TextBlock x:Name="RamValue" Style="{StaticResource StatValue}" Foreground="{StaticResource Good}" Text="0 / 0 GB"/>
+                                    <ProgressBar x:Name="RamBar" Maximum="100" Foreground="{StaticResource Good}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource Card}" Grid.Column="2" Margin="6,0">
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource StatLabel}" Text="DISCO C:"/>
+                                    <TextBlock x:Name="DiskValue" Style="{StaticResource StatValue}" Foreground="{StaticResource Warn}" Text="-- GB"/>
+                                    <ProgressBar x:Name="DiskBar" Maximum="100" Foreground="{StaticResource Warn}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource Card}" Grid.Column="3" Margin="6,0,0,0">
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource StatLabel}" Text="PROCESSI"/>
+                                    <TextBlock x:Name="ProcCount" Style="{StaticResource StatValue}" Foreground="{StaticResource Accent2}" Text="0"/>
+                                    <TextBlock x:Name="UptimeText" Text="Uptime: --" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- LIVE TELEMETRY ROW -->
+                        <Grid Grid.Row="1" Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource Card}" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <DockPanel>
+                                        <Ellipse Width="8" Height="8" Fill="{StaticResource Accent}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <TextBlock Style="{StaticResource StatLabel}" Text="NETWORK LIVE"/>
+                                    </DockPanel>
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="↓ Download" Foreground="{StaticResource TextMuted}" FontSize="11"/>
+                                            <TextBlock x:Name="NetDown" Text="0 KB/s" Foreground="{StaticResource Good}" FontSize="19" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="↑ Upload" Foreground="{StaticResource TextMuted}" FontSize="11"/>
+                                            <TextBlock x:Name="NetUp" Text="0 KB/s" Foreground="{StaticResource Accent2}" FontSize="19" FontWeight="Bold"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <TextBlock x:Name="NetIfaceText" Text="Interfaccia: --" Foreground="{StaticResource TextDim}" FontSize="11" Margin="0,8,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource Card}" Grid.Column="1" Margin="6,0">
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource StatLabel}" Text="PING GATEWAY"/>
+                                    <TextBlock x:Name="PingValue" Text="-- ms" Foreground="{StaticResource Info}" FontSize="26" FontWeight="Bold" Margin="0,4,0,8"/>
+                                    <TextBlock x:Name="PingTarget" Text="--" Foreground="{StaticResource TextMuted}" FontSize="11"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource Card}" Grid.Column="2" Margin="6,0,0,0">
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource StatLabel}"><Run Language="it-it" Text="CPU / GPU "/></TextBlock>
+                                    <TextBlock x:Name="BatteryValue" Text="--" Foreground="{StaticResource AccentPink}" FontSize="21" FontWeight="Bold" Margin="0,4,0,2"/>
+                                    <TextBlock x:Name="TempValue" Text="CPU: --" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock x:Name="GpuLiveText" Text="GPU: --" Foreground="{StaticResource TextMuted}" FontSize="12" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- QUICK ACTIONS -->
+                        <Border Grid.Row="2" Style="{StaticResource Card}" Margin="0,14,0,0">
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Top">
+                                    <TextBlock Style="{StaticResource SectionTitle}" Text="⚡ Azioni rapide"/>
+                                    <TextBlock x:Name="SysInfoText" Text="--" Foreground="{StaticResource TextMuted}" FontSize="12" Margin="0,6,0,14"/>
+                                </StackPanel>
+                                <WrapPanel>
+                                    <Button Style="{StaticResource ActionButton}" Content="🎮  Gaming Mode"   Margin="0,0,8,8" Click="GamingMode_Click"
+                                            ToolTip="Chiude in un colpo solo app pesanti in background."/>
+                                    <Button Style="{StaticResource ActionButton}" Content="⚡  Libera RAM"     Margin="0,0,8,8" Click="FreeRam_Click"
+                                            ToolTip="EmptyWorkingSet su tutti i processi."/>
+                                    <Button Style="{StaticResource GhostButton}"  Content="🗑  Svuota Temp"    Margin="0,0,8,8" Click="CleanTemp_Click"/>
+                                    <Button Style="{StaticResource GhostButton}"  Content="🌐  Flush DNS"      Margin="0,0,8,8" Click="FlushDns_Click"/>
+                                    <Button Style="{StaticResource WarnButton}"   Content="🔄  Ultimate Perf"  Margin="0,0,8,8" Click="UltimatePerf_Click"/>
+                                    <Button Style="{StaticResource GoodButton}"   Content="↻  Restore Default" Margin="0,0,8,8" Click="RestoreDefaults_Click"/>
+                                    <Button Style="{StaticResource ActionButton}" Content="🧪  Health Check"   Margin="0,0,8,8" Click="HealthCheck_Click"/>
+                                    <Button Style="{StaticResource GhostButton}"  Content="📊  Task Manager"   Margin="0,0,8,8" Click="OpenTaskMgr_Click"/>
+                                </WrapPanel>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- ============ PROCESSI ============ -->
+                    <Grid x:Name="ViewProcesses" Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged" Margin="0,0,10,0"
+                                     ToolTip="Filtra per nome processo"/>
+                            <Button Grid.Column="1" Style="{StaticResource MicroButton}" Content="☑ Tutti" Margin="0,0,4,0" Click="ProcSelectAll_Click"/>
+                            <Button Grid.Column="2" Style="{StaticResource MicroButton}" Content="☐ Nessuno" Margin="0,0,10,0" Click="ProcSelectNone_Click"/>
+                            <ComboBox x:Name="PriorityBox" Grid.Column="3" Width="140" Margin="0,0,8,0" SelectedIndex="2"
+                                      ToolTip="Priorità CPU. RealTime = pericoloso.">
+                                <ComboBoxItem>Idle</ComboBoxItem>
+                                <ComboBoxItem>BelowNormal</ComboBoxItem>
+                                <ComboBoxItem>Normal</ComboBoxItem>
+                                <ComboBoxItem>AboveNormal</ComboBoxItem>
+                                <ComboBoxItem>High</ComboBoxItem>
+                                <ComboBoxItem>RealTime</ComboBoxItem>
+                            </ComboBox>
+                            <Button Grid.Column="4" Style="{StaticResource GhostButton}" Content="Applica priorità" Margin="0,0,8,0" Click="ApplyPriority_Click"/>
+                            <Button Grid.Column="5" Style="{StaticResource GhostButton}" Content="↻ Aggiorna" Margin="0,0,8,0" Click="Refresh_Click"/>
+                            <Button Grid.Column="6" Style="{StaticResource WarnButton}" Content="⏸ Sospendi" Margin="0,0,8,0" Click="Suspend_Click"/>
+                            <Button Grid.Column="7" Style="{StaticResource DangerButton}" Content="✕ Termina" Click="Kill_Click"/>
+                        </Grid>
+                        <TextBlock Grid.Row="1" x:Name="ProcSelInfo" Text="0 processi selezionati" Foreground="{StaticResource TextMuted}" FontSize="12" Margin="2,0,0,8"/>
+                        <Border Grid.Row="2" Style="{StaticResource Card}" Padding="0">
+                            <DataGrid x:Name="ProcessGrid">
+                                <DataGrid.Columns>
+                                    <DataGridCheckBoxColumn Header="✓" Width="40"
+                                        Binding="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridTextColumn Header="Nome"     Binding="{Binding Name}"    Width="*"  IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="PID"      Binding="{Binding Id}"      Width="80" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="RAM"      Binding="{Binding RamMb, StringFormat={}{0:N1} MB}" Width="110" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Thread"   Binding="{Binding Threads}" Width="80" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Priorità" Binding="{Binding Priority}" Width="120" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Path"     Binding="{Binding Path}"     Width="320" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+                    </Grid>
+
+                    <!-- ============ SERVIZI ============ -->
+                    <Grid x:Name="ViewServices" Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="SvcSearchBox" TextChanged="SvcSearchBox_TextChanged" Margin="0,0,10,0"
+                                     ToolTip="Filtra servizi"/>
+                            <Button Grid.Column="1" Style="{StaticResource MicroButton}" Content="☑ Tutti (visibili)" Margin="0,0,4,0" Click="SvcSelectAll_Click"/>
+                            <Button Grid.Column="2" Style="{StaticResource MicroButton}" Content="☐ Nessuno" Margin="0,0,4,0" Click="SvcSelectNone_Click"/>
+                            <Button Grid.Column="3" Style="{StaticResource MicroButton}" Content="✓ Solo consigliati" Margin="0,0,10,0" Click="SvcSelectRecommended_Click"/>
+                            <Button Grid.Column="4" Style="{StaticResource GhostButton}" Content="↻ Aggiorna" Click="SvcRefresh_Click"/>
+                        </Grid>
+                        <Grid Grid.Row="1" Margin="0,10,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource GoodButton}"   Content="Profilo SICURO"     Margin="0,0,8,0" Click="SvcProfileSafe_Click"/>
+                            <Button Grid.Column="1" Style="{StaticResource WarnButton}"   Content="Profilo GAMING"     Margin="0,0,8,0" Click="SvcProfileGaming_Click"/>
+                            <Button Grid.Column="2" Style="{StaticResource DangerButton}" Content="Profilo AGGRESSIVO" Margin="0,0,8,0" Click="SvcProfileAggressive_Click"/>
+                            <Button Grid.Column="3" Style="{StaticResource GhostButton}"  Content="Ripristina default" Margin="0,0,8,0" Click="SvcRestore_Click"/>
+                            <TextBlock Grid.Column="4" x:Name="SvcSelInfo" Text="0 servizi selezionati" Foreground="{StaticResource TextMuted}" FontSize="12" VerticalAlignment="Center" Margin="10,0"/>
+                            <Button Grid.Column="5" Style="{StaticResource ActionButton}" Content="▶ Avvia"     Margin="0,0,8,0" Click="SvcStartSel_Click"/>
+                            <Button Grid.Column="6" Style="{StaticResource WarnButton}"   Content="■ Stoppa"    Margin="0,0,8,0" Click="SvcStopSel_Click"/>
+                            <Button Grid.Column="7" Style="{StaticResource DangerButton}" Content="✕ Disabilita" Click="SvcDisableSel_Click"/>
+                        </Grid>
+                        <Border Grid.Row="3" Style="{StaticResource Card}" Padding="0">
+                            <DataGrid x:Name="ServicesGrid">
+                                <DataGrid.Columns>
+                                    <DataGridCheckBoxColumn Header="✓" Width="40"
+                                        Binding="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridTextColumn Header="Nome"        Binding="{Binding Name}"           Width="180" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Display"     Binding="{Binding DisplayName}"    Width="*"   IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Stato"       Binding="{Binding Status}"         Width="100" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Startup"     Binding="{Binding StartMode}"      Width="110" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Consiglio"   Binding="{Binding Recommendation}" Width="120" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Descrizione" Binding="{Binding Description}"    Width="320" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+                    </Grid>
+
+                    <!-- ============ TOOLS ============ -->
+                    <Grid x:Name="ViewTools" Visibility="Collapsed">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Style="{StaticResource Card}" Margin="0,0,7,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🎮 Gaming Mode"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Chiude OneDrive, Teams, Edge, Spotify, Discord, ecc."/>
+                                        <Button Style="{StaticResource ActionButton}" HorizontalAlignment="Left" Content="Attiva ora" Click="GamingMode_Click"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Column="1" Margin="7,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="⚡ Libera RAM"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="EmptyWorkingSet. Effetto immediato."/>
+                                        <Button Style="{StaticResource ActionButton}" HorizontalAlignment="Left" Content="Esegui" Click="FreeRam_Click"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource Card}" Grid.Row="1" Margin="0,0,7,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🗑 Pulizia Temp"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Svuota %TEMP%, Windows\Temp, Prefetch."/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Style="{StaticResource GhostButton}" Content="Pulisci ora" Margin="0,0,8,0" Click="CleanTemp_Click"/>
+                                            <Button Style="{StaticResource ActionButton}" Content="Disk Cleanup" Click="DiskCleanup_Click"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="1" Grid.Column="1" Margin="7,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🧠 Memory Compression"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Comprime pagine RAM inattive."/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Style="{StaticResource GoodButton}"   Content="Attiva"   Margin="0,0,8,0" Click="MemCompressOn_Click"/>
+                                            <Button Style="{StaticResource DangerButton}" Content="Disattiva" Click="MemCompressOff_Click"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource Card}" Grid.Row="2" Margin="0,0,7,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🛡 Privacy Tweaks"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Telemetria, advertising ID, Cortana, Bing."/>
+                                        <Button Style="{StaticResource ActionButton}" HorizontalAlignment="Left" Content="Applica" Click="PrivacyTweaks_Click"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="2" Grid.Column="1" Margin="7,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="💾 Cache Reset"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Icon, font, thumbnail cache."/>
+                                        <Button Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Content="Reset cache" Click="CacheReset_Click"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource Card}" Grid.Row="3" Margin="0,0,7,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🎨 Visual Effects"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Animazioni, ombre, trasparenze."/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Style="{StaticResource ActionButton}" Content="Performance"   Margin="0,0,8,0" Click="VisualFxPerf_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="Ripristina"    Click="VisualFxRestore_Click"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="3" Grid.Column="1" Margin="7,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="💽 SSD TRIM / Defrag"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="TRIM (SSD) o defrag (HDD) sul C:."/>
+                                        <Button Style="{StaticResource ActionButton}" HorizontalAlignment="Left" Content="Ottimizza C:" Click="OptimizeDrive_Click"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource Card}" Grid.Row="4" Margin="0,0,7,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🖱 Mouse Acceleration"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Movimento 1:1, niente smoothing."/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Style="{StaticResource ActionButton}" Content="Disattiva accel"  Margin="0,0,8,0" Click="MouseAccelOff_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="Ripristina"        Click="MouseAccelOn_Click"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="4" Grid.Column="1" Margin="7,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🎬 Game DVR / Game Bar"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Disabilita registrazione background Xbox."/>
+                                        <Button Style="{StaticResource DangerButton}" HorizontalAlignment="Left" Content="Disattiva DVR" Click="GameDvrOff_Click"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource Card}" Grid.Row="5" Margin="0,0,7,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🌐 Browser Cache"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Chrome / Edge / Firefox / Brave."/>
+                                        <Button Style="{StaticResource ActionButton}" HorizontalAlignment="Left" Content="Pulisci cache browser" Click="BrowserCache_Click"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="5" Grid.Column="1" Margin="7,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🛟 Restore Point"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Crea un punto di ripristino."/>
+                                        <Button Style="{StaticResource GoodButton}" HorizontalAlignment="Left" Content="Crea Restore Point" Click="CreateRestorePoint_Click"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <!-- ============ POWER ============ -->
+                    <Grid x:Name="ViewPower" Visibility="Collapsed">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border Style="{StaticResource Card}" Margin="0,0,7,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="⚡ Power Plan"/>
+                                        <TextBlock x:Name="CurrentPlanText" Text="Attivo: --" Foreground="{StaticResource TextMuted}" Margin="0,6,0,12" TextWrapping="Wrap"/>
+                                        <WrapPanel>
+                                            <Button Style="{StaticResource GhostButton}"  Content="Balanced"    Margin="0,0,8,8" Click="PlanBalanced_Click"/>
+                                            <Button Style="{StaticResource ActionButton}" Content="High Perf"   Margin="0,0,8,8" Click="PlanHigh_Click"/>
+                                            <Button Style="{StaticResource WarnButton}"   Content="Ultimate"    Margin="0,0,8,8" Click="UltimatePerf_Click"/>
+                                            <Button Style="{StaticResource GoodButton}"   Content="Power Saver" Margin="0,0,8,8" Click="PlanSaver_Click"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Column="1" Margin="7,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🧩 Core Parking"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Tutti i core sempre attivi."/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Style="{StaticResource DangerButton}" Content="Disattiva parking" Margin="0,0,8,0" Click="CoreParkOff_Click"/>
+                                            <Button Style="{StaticResource GoodButton}"   Content="Ripristina"        Click="CoreParkOn_Click"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="1" Margin="0,0,7,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🌙 Background Apps"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="App UWP nascoste. Libera RAM."/>
+                                        <Button Style="{StaticResource ActionButton}" HorizontalAlignment="Left" Content="Disabilita" Click="BgAppsOff_Click"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="1" Grid.Column="1" Margin="7,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🎮 GPU HAGS"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Hardware Accelerated GPU Scheduling."/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Style="{StaticResource ActionButton}" Content="Attiva HAGS"  Margin="0,0,8,0" Click="HagsOn_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="Disattiva"    Click="HagsOff_Click"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="2" Margin="0,0,7,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🔌 USB Selective Suspend"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Evita microscatti su periferiche USB."/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Style="{StaticResource ActionButton}" Content="Disattiva" Margin="0,0,8,0" Click="UsbSuspendOff_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="Ripristina" Click="UsbSuspendOn_Click"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="2" Grid.Column="1" Margin="7,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="💤 Ibernazione"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Recupera GB sull'SSD."/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Style="{StaticResource DangerButton}" Content="Disattiva" Margin="0,0,8,0" Click="HiberOff_Click"/>
+                                            <Button Style="{StaticResource GoodButton}"   Content="Riattiva" Click="HiberOn_Click"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <!-- ============ INTELPPM EDITOR ============ -->
+                    <Grid x:Name="ViewIntelppmEditor" Visibility="Collapsed">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <!-- HERO -->
+                                <Border CornerRadius="14" Padding="22,18" Margin="0,0,0,14"
+                                        BorderBrush="{StaticResource Border}" BorderThickness="1"
+                                        Effect="{StaticResource CardShadow}">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#172132" Offset="0"/>
+                                            <GradientStop Color="#161E2E" Offset="0.55"/>
+                                            <GradientStop Color="#102330" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="🔧" FontSize="24" VerticalAlignment="Center"/>
+                                            <TextBlock Text="IntelPPM Editor" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                                            <Border Margin="12,0,0,0" Background="#15323F" CornerRadius="6" Padding="9,3" VerticalAlignment="Center">
+                                                <TextBlock Text="Strumento avanzato di diagnostica e gestione driver" Foreground="{StaticResource Info}" FontSize="10.5" FontWeight="SemiBold"/>
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock Foreground="{StaticResource TextMuted}" FontSize="12.5" TextWrapping="Wrap" Margin="0,8,0,0"
+                                                   Text="Legge e modifica il valore Start del servizio intelppm in HKLM\SYSTEM\CurrentControlSet\Services\intelppm, senza aprire Regedit. Il valore Start decide QUANDO Windows carica il driver intelppm.sys all'avvio: non è un tweak prestazionale garantito. Le modifiche richiedono il riavvio."/>
+                                        <Border Margin="0,12,0,0" Background="#2A1414" BorderBrush="#5A2A2A" BorderThickness="1" CornerRadius="8" Padding="12,9">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="⚠" FontSize="15" Foreground="{StaticResource Bad}" VerticalAlignment="Top"/>
+                                                <TextBlock Margin="9,0,0,0" Foreground="#FCA5A5" FontSize="11.5" TextWrapping="Wrap"
+                                                           Text="Impostare 4 (Disabled) disattiva la gestione P-State di Intel: può cambiare il comportamento di frequenza/risparmio energetico. Gli effetti dipendono da CPU, BIOS, microcode e versione di Windows. Usa con cognizione e sappi come ripristinare."/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- ROW 1: VALORE ATTUALE + SELETTORE -->
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="1.3*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- VALORE ATTUALE -->
+                                    <Border Style="{StaticResource Card}" Margin="0,0,7,0">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource SectionTitle}" Text="🎯 Valore attuale"/>
+                                            <TextBlock Style="{StaticResource SectionSub}" Text="Chiave: intelppm\Start"/>
+                                            <Border Margin="0,12,0,0" Background="#0E1422" CornerRadius="10" Padding="16,14">
+                                                <StackPanel>
+                                                    <TextBlock Text="Current Start Value" Foreground="{StaticResource TextMuted}" FontSize="10.5"/>
+                                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                                        <TextBlock x:Name="PpmCurrentValueNum" Text="—" Foreground="{StaticResource Accent}" FontSize="44" FontWeight="Bold"/>
+                                                        <TextBlock x:Name="PpmCurrentValueName" Text="(Sconosciuto)" Foreground="{StaticResource Text}" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,0,0" TextWrapping="Wrap"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Border>
+                                            <Button Style="{StaticResource MicroButton}" HorizontalAlignment="Left" Margin="0,12,0,0" Content="🔄 Rileggi dal registro" Click="RefreshIntelppm_Click"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- SELETTORE -->
+                                    <Border Style="{StaticResource Card}" Grid.Column="1" Margin="7,0,0,0">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource SectionTitle}" Text="⚙ Cambia valore"/>
+                                            <TextBlock Style="{StaticResource SectionSub}" Text="Seleziona con i RadioButton oppure dal menu a tendina, poi premi Applica."/>
+
+                                            <StackPanel Margin="0,10,0,0">
+                                                <RadioButton x:Name="PpmRadio0" GroupName="PpmStart" Foreground="{StaticResource Text}" FontSize="12.5" Margin="0,4" Content="0 — Boot Start  ·  carica il driver durante il boot" ToolTip="Driver caricato dal boot loader, prima del kernel. Molto raro per intelppm."/>
+                                                <RadioButton x:Name="PpmRadio1" GroupName="PpmStart" Foreground="{StaticResource Text}" FontSize="12.5" Margin="0,4" Content="1 — System Start  ·  carica molto presto" ToolTip="Caricato durante l'inizializzazione del kernel."/>
+                                                <RadioButton x:Name="PpmRadio2" GroupName="PpmStart" Foreground="{StaticResource Text}" FontSize="12.5" Margin="0,4" Content="2 — Automatic Start  ·  caricamento automatico" ToolTip="Caricato automaticamente all'avvio del sistema."/>
+                                                <RadioButton x:Name="PpmRadio3" GroupName="PpmStart" Foreground="{StaticResource Text}" FontSize="12.5" Margin="0,4" Content="3 — Manual Start  ·  su richiesta (default tipico)" ToolTip="Caricato solo su richiesta. Valore predefinito comune per intelppm su Windows 10/11."/>
+                                                <RadioButton x:Name="PpmRadio4" GroupName="PpmStart" Foreground="{StaticResource Text}" FontSize="12.5" Margin="0,4" Content="4 — Disabled  ·  driver disattivato" ToolTip="Il driver intelppm.sys non viene caricato."/>
+                                            </StackPanel>
+
+                                            <Grid Margin="0,14,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ComboBox x:Name="PpmCombo" Width="220" Height="32" Padding="10,6" VerticalAlignment="Center"
+                                                          Foreground="{StaticResource Text}" Background="#161E2E" BorderBrush="{StaticResource Border}"
+                                                          SelectionChanged="PpmCombo_SelectionChanged">
+                                                    <ComboBoxItem Content="0 - Boot Start"/>
+                                                    <ComboBoxItem Content="1 - System Start"/>
+                                                    <ComboBoxItem Content="2 - Automatic Start"/>
+                                                    <ComboBoxItem Content="3 - Manual Start"/>
+                                                    <ComboBoxItem Content="4 - Disabled"/>
+                                                </ComboBox>
+                                                <Button Grid.Column="1" Style="{StaticResource ActionButton}" Margin="10,0,0,0" Content="✓ Applica al registro" Click="ApplyIntelppm_Click"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <!-- ROW 2: TABELLA DESCRIZIONE -->
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="📖 Descrizione dei valori"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Significato di ciascun valore della chiave Start."/>
+                                        <Border Margin="0,12,0,0" Background="#0E1422" CornerRadius="10">
+                                            <StackPanel>
+                                                <!-- header -->
+                                                <Grid Margin="14,10">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="64"/>
+                                                        <ColumnDefinition Width="170"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="Valore" Foreground="{StaticResource TextDim}" FontSize="10.5" FontWeight="SemiBold"/>
+                                                    <TextBlock Grid.Column="1" Text="Nome" Foreground="{StaticResource TextDim}" FontSize="10.5" FontWeight="SemiBold"/>
+                                                    <TextBlock Grid.Column="2" Text="Descrizione" Foreground="{StaticResource TextDim}" FontSize="10.5" FontWeight="SemiBold"/>
+                                                </Grid>
+
+                                                <!-- row 0 -->
+                                                <Border BorderBrush="{StaticResource Border}" BorderThickness="0,1,0,0" Padding="14,11">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="64"/>
+                                                            <ColumnDefinition Width="170"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Background="#0E2A30" CornerRadius="6" Width="34" Height="26" HorizontalAlignment="Left">
+                                                            <TextBlock Text="0" Foreground="{StaticResource Info}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <TextBlock Grid.Column="1" Text="Boot Start" Foreground="{StaticResource Text}" FontWeight="SemiBold" FontSize="12.5" VerticalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="2" Text="Carica il driver durante il boot, prima del kernel. Raro per intelppm." Foreground="{StaticResource TextMuted}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                    </Grid>
+                                                </Border>
+
+                                                <!-- row 1 -->
+                                                <Border BorderBrush="{StaticResource Border}" BorderThickness="0,1,0,0" Padding="14,11">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="64"/>
+                                                            <ColumnDefinition Width="170"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Background="#0E2A30" CornerRadius="6" Width="34" Height="26" HorizontalAlignment="Left">
+                                                            <TextBlock Text="1" Foreground="{StaticResource Info}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <TextBlock Grid.Column="1" Text="System Start" Foreground="{StaticResource Text}" FontWeight="SemiBold" FontSize="12.5" VerticalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="2" Text="Carica molto presto, durante l'inizializzazione del kernel." Foreground="{StaticResource TextMuted}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                    </Grid>
+                                                </Border>
+
+                                                <!-- row 2 -->
+                                                <Border BorderBrush="{StaticResource Border}" BorderThickness="0,1,0,0" Padding="14,11">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="64"/>
+                                                            <ColumnDefinition Width="170"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Background="#0E2E22" CornerRadius="6" Width="34" Height="26" HorizontalAlignment="Left">
+                                                            <TextBlock Text="2" Foreground="{StaticResource Good}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <TextBlock Grid.Column="1" Text="Automatic Start" Foreground="{StaticResource Text}" FontWeight="SemiBold" FontSize="12.5" VerticalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="2" Text="Caricamento automatico all'avvio del sistema." Foreground="{StaticResource TextMuted}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                    </Grid>
+                                                </Border>
+
+                                                <!-- row 3 -->
+                                                <Border BorderBrush="{StaticResource Border}" BorderThickness="0,1,0,0" Padding="14,11">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="64"/>
+                                                            <ColumnDefinition Width="170"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Background="#11252F" CornerRadius="6" Width="34" Height="26" HorizontalAlignment="Left">
+                                                            <TextBlock Text="3" Foreground="{StaticResource Accent}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                            <TextBlock Text="Manual Start" Foreground="{StaticResource Text}" FontWeight="SemiBold" FontSize="12.5"/>
+                                                            <Border Background="#11252F" CornerRadius="5" Padding="6,1" Margin="8,0,0,0">
+                                                                <TextBlock Text="default" Foreground="{StaticResource Accent}" FontSize="9.5" FontWeight="SemiBold"/>
+                                                            </Border>
+                                                        </StackPanel>
+                                                        <TextBlock Grid.Column="2" Text="Caricamento su richiesta. Valore predefinito tipico di intelppm." Foreground="{StaticResource TextMuted}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                    </Grid>
+                                                </Border>
+
+                                                <!-- row 4 -->
+                                                <Border BorderBrush="{StaticResource Border}" BorderThickness="0,1,0,0" Padding="14,11">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="64"/>
+                                                            <ColumnDefinition Width="170"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Background="#2A1414" CornerRadius="6" Width="34" Height="26" HorizontalAlignment="Left">
+                                                            <TextBlock Text="4" Foreground="{StaticResource Bad}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                            <TextBlock Text="Disabled" Foreground="{StaticResource Text}" FontWeight="SemiBold" FontSize="12.5"/>
+                                                            <Border Background="#2A1414" CornerRadius="5" Padding="6,1" Margin="8,0,0,0">
+                                                                <TextBlock Text="⚠ attenzione" Foreground="{StaticResource Bad}" FontSize="9.5" FontWeight="SemiBold"/>
+                                                            </Border>
+                                                        </StackPanel>
+                                                        <TextBlock Grid.Column="2" Text="Driver disattivato: non viene caricato. Può influire su frequenza/risparmio." Foreground="{StaticResource TextMuted}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                    </Grid>
+                                                </Border>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- ROW 3: STATO SISTEMA + AZIONI -->
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="1.1*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- STATO SISTEMA -->
+                                    <Border Style="{StaticResource Card}" Margin="0,0,7,0">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource SectionTitle}" Text="🖥 Stato sistema"/>
+                                            <Grid Margin="0,12,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="IntelPPM Driver" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                                <TextBlock x:Name="PpmDriverState" Grid.Column="1" Text="—" Foreground="{StaticResource Good}" FontSize="12.5" FontWeight="SemiBold"/>
+                                            </Grid>
+                                            <Grid Margin="0,9,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Valore Registro (Start)" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                                <TextBlock x:Name="PpmRegValueState" Grid.Column="1" Text="—" Foreground="{StaticResource Accent}" FontSize="12.5" FontWeight="SemiBold"/>
+                                            </Grid>
+                                            <Grid Margin="0,9,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Riavvio Richiesto" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                                <TextBlock x:Name="PpmRebootState" Grid.Column="1" Text="No" Foreground="{StaticResource Good}" FontSize="12.5" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- AZIONI -->
+                                    <Border Style="{StaticResource Card}" Grid.Column="1" Margin="7,0,0,0">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource SectionTitle}" Text="🛠 Azioni"/>
+                                            <TextBlock Style="{StaticResource SectionSub}" Text="Strumenti rapidi per gestione e verifica."/>
+                                            <WrapPanel Margin="0,12,0,0">
+                                                <Button Style="{StaticResource ActionButton}" Margin="0,0,8,8" Content="✓ Applica al registro" Click="ApplyIntelppm_Click"/>
+                                                <Button Style="{StaticResource GhostButton}" Margin="0,0,8,8" Content="📋 Apri Gestione Attività" Click="OpenTaskManager_Click"/>
+                                                <Button Style="{StaticResource GhostButton}" Margin="0,0,8,8" Content="🔍 Apri Regedit (intelppm)" Click="OpenIntelppmRegistry_Click"/>
+                                                <Button Style="{StaticResource GhostButton}" Margin="0,0,0,8" Content="♻ Ripristina predefinito (3)" Click="RestoreIntelppmDefault_Click"/>
+                                            </WrapPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <!-- ROW 4: GUIDA VERIFICA FREQUENZA -->
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="⚡ Come verificare la frequenza della CPU"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Per controllare l'effetto reale della modifica, usa Gestione Attività dopo il riavvio."/>
+                                        <StackPanel Margin="0,10,0,0">
+                                            <TextBlock Foreground="{StaticResource TextMuted}" FontSize="12.5" Margin="0,2" Text="1.  Apri Gestione Attività (pulsante qui sopra)."/>
+                                            <TextBlock Foreground="{StaticResource TextMuted}" FontSize="12.5" Margin="0,2" Text="2.  Vai nella scheda Prestazioni."/>
+                                            <TextBlock Foreground="{StaticResource TextMuted}" FontSize="12.5" Margin="0,2" Text="3.  Seleziona CPU."/>
+                                            <TextBlock Foreground="{StaticResource TextMuted}" FontSize="12.5" Margin="0,2" Text="4.  Guarda il campo &quot;Velocità&quot; e confronta i valori prima e dopo il riavvio."/>
+                                            <Border Margin="0,10,0,0" Background="#0E1422" CornerRadius="8" Padding="12,9">
+                                                <TextBlock Foreground="{StaticResource TextDim}" FontSize="11" TextWrapping="Wrap"
+                                                           Text="Nota: la &quot;Velocità&quot; mostrata da altri strumenti (Win32_Processor.CurrentClockSpeed o PerformanceCounter) può essere imprecisa o in ritardo, soprattutto sulle CPU Intel moderne. Gestione Attività usa contatori del kernel ed è il riferimento più affidabile."/>
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- LOG -->
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,0">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="📝 Registro modifiche"/>
+                                        <TextBlock x:Name="IntelppmLogText" Foreground="{StaticResource TextMuted}" FontSize="11.5" FontFamily="Cascadia Mono, Consolas" TextWrapping="Wrap" Margin="0,8,0,0" Text="Pronto per le modifiche..."/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <!-- ============ NETWORK ============ -->
+                    <Grid x:Name="ViewNetwork" Visibility="Collapsed">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border Style="{StaticResource Card}" Margin="0,0,7,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🚀 TCP Optimization"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Autotuning, ECN, RSS, Nagle off."/>
+                                        <Button Style="{StaticResource ActionButton}" HorizontalAlignment="Left" Content="Applica TCP tweaks" Click="TcpTweaks_Click"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Column="1" Margin="7,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🌐 DNS"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Cloudflare / Google / Quad9."/>
+                                        <WrapPanel>
+                                            <Button Style="{StaticResource ActionButton}" Content="Cloudflare"  Margin="0,0,8,8" Click="DnsCloudflare_Click"/>
+                                            <Button Style="{StaticResource ActionButton}" Content="Google"      Margin="0,0,8,8" Click="DnsGoogle_Click"/>
+                                            <Button Style="{StaticResource ActionButton}" Content="Quad9"       Margin="0,0,8,8" Click="DnsQuad9_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="Auto (DHCP)" Margin="0,0,8,8" Click="DnsAuto_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="Flush DNS"   Margin="0,0,8,8" Click="FlushDns_Click"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="1" Margin="0,0,7,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="⏱ Network Throttling"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Migliora il ping in gaming."/>
+                                        <Button Style="{StaticResource ActionButton}" HorizontalAlignment="Left" Content="Disattiva throttling" Click="NetThrottlingOff_Click"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="1" Grid.Column="1" Margin="7,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🔢 IPv6"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Disattiva se ISP non lo supporta."/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Style="{StaticResource DangerButton}" Content="Disattiva" Margin="0,0,8,0" Click="Ipv6Off_Click"/>
+                                            <Button Style="{StaticResource GoodButton}"   Content="Attiva" Click="Ipv6On_Click"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🔁 Network Reset"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Winsock + reset IP. Riavvio richiesto."/>
+                                        <Button Style="{StaticResource WarnButton}" HorizontalAlignment="Left" Content="Reset stack" Click="NetReset_Click"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Grid.Row="3" Grid.ColumnSpan="2" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="📶 Speed / Latency Test"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Ping a Cloudflare/Google/Quad9 + download 10 MB."/>
+                                        <Button Style="{StaticResource ActionButton}" HorizontalAlignment="Left" Content="Avvia test" Click="NetSpeedTest_Click"/>
+                                        <TextBlock x:Name="NetTestResult" Text="" Foreground="{StaticResource Accent}" FontFamily="Cascadia Mono, Consolas" FontSize="12" Margin="0,10,0,0" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <!-- ============ DEBLOAT ============ -->
+                    <Grid x:Name="ViewDebloat" Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="AppsSearchBox" TextChanged="AppsSearchBox_TextChanged" Margin="0,0,10,0"/>
+                            <Button Grid.Column="1" Style="{StaticResource MicroButton}" Content="☑ Tutti" Margin="0,0,4,0" Click="AppsSelectAll_Click"/>
+                            <Button Grid.Column="2" Style="{StaticResource MicroButton}" Content="☐ Nessuno" Margin="0,0,4,0" Click="AppsSelectNone_Click"/>
+                            <Button Grid.Column="3" Style="{StaticResource WarnButton}"  Content="✓ Solo bloat" Margin="0,0,8,0" Click="AppsSelectBloat_Click"/>
+                            <Button Grid.Column="4" Style="{StaticResource GhostButton}" Content="↻ Aggiorna" Margin="0,0,8,0" Click="AppsRefresh_Click"/>
+                            <Button Grid.Column="5" Style="{StaticResource DangerButton}" Content="✕ Rimuovi selezionate" Click="AppsRemove_Click"/>
+                        </Grid>
+                        <TextBlock Grid.Row="1" x:Name="AppsSelInfo" Text="0 app selezionate" Foreground="{StaticResource TextMuted}" FontSize="12" Margin="2,10,0,8"/>
+                        <Border Grid.Row="2" Style="{StaticResource Card}" Padding="0">
+                            <DataGrid x:Name="AppsGrid">
+                                <DataGrid.Columns>
+                                    <DataGridCheckBoxColumn Header="✓" Width="40"
+                                        Binding="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridTextColumn Header="App"       Binding="{Binding Name}"           Width="*"   IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Publisher" Binding="{Binding Publisher}"      Width="260" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Consiglio" Binding="{Binding Recommendation}" Width="130" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+                    </Grid>
+
+                    <!-- ============ STARTUP ============ -->
+                    <Grid x:Name="ViewStartup" Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock VerticalAlignment="Center" Foreground="{StaticResource TextMuted}" FontSize="13"
+                                       Text="Spunta le voci e clicca 'Disabilita selezionate'."/>
+                            <Button Grid.Column="1" Style="{StaticResource MicroButton}" Content="☑ Tutti" Margin="0,0,4,0" Click="StartupSelectAll_Click"/>
+                            <Button Grid.Column="2" Style="{StaticResource MicroButton}" Content="☐ Nessuno" Margin="0,0,8,0" Click="StartupSelectNone_Click"/>
+                            <Button Grid.Column="3" Style="{StaticResource GhostButton}"  Content="↻ Aggiorna" Margin="0,0,8,0" Click="StartupRefresh_Click"/>
+                            <Button Grid.Column="4" Style="{StaticResource DangerButton}" Content="✕ Disabilita selezionate" Click="StartupRemove_Click"/>
+                        </Grid>
+                        <TextBlock Grid.Row="1" x:Name="StartupSelInfo" Text="0 voci selezionate" Foreground="{StaticResource TextMuted}" FontSize="12" Margin="2,10,0,8"/>
+                        <Border Grid.Row="2" Style="{StaticResource Card}" Padding="0">
+                            <DataGrid x:Name="StartupGrid">
+                                <DataGrid.Columns>
+                                    <DataGridCheckBoxColumn Header="✓" Width="40"
+                                        Binding="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridTextColumn Header="Nome"     Binding="{Binding Name}"     Width="240" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Comando"  Binding="{Binding Command}"  Width="*"   IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Sorgente" Binding="{Binding Location}" Width="220" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+                    </Grid>
+
+                    <!-- ============ SYSTEM / DIAGNOSTICA ============ -->
+                    <Grid x:Name="ViewSystem" Visibility="Collapsed">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource Card}" Margin="0,0,6,0">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource StatLabel}" Text="CPU"/>
+                                            <TextBlock x:Name="SysCpuName" Text="--" Foreground="{StaticResource Text}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                            <TextBlock x:Name="SysCpuDetails" Text="--" Foreground="{StaticResource TextMuted}" FontSize="11.5" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Style="{StaticResource Card}" Grid.Column="1" Margin="6,0">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource StatLabel}" Text="GPU"/>
+                                            <TextBlock x:Name="SysGpuName" Text="--" Foreground="{StaticResource Text}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                            <TextBlock x:Name="SysGpuDetails" Text="--" Foreground="{StaticResource TextMuted}" FontSize="11.5" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Style="{StaticResource Card}" Grid.Column="2" Margin="6,0,0,0">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource StatLabel}" Text="MOBO / BIOS"/>
+                                            <TextBlock x:Name="SysMobo" Text="--" Foreground="{StaticResource Text}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                            <TextBlock x:Name="SysBios" Text="--" Foreground="{StaticResource TextMuted}" FontSize="11.5" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource Card}" Margin="0,0,7,0">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource SectionTitle}" Text="🔥 Top processi (RAM)"/>
+                                            <TextBlock Style="{StaticResource SectionSub}" Text="Snapshot ordinato per memoria."/>
+                                            <!-- Riga 1002: era <ItemsControl x:Name="TopProcList"/> -->
+                                            <ItemsControl x:Name="TopProcList">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding}"
+                                                           Foreground="{StaticResource Accent}"
+                                                           FontFamily="Cascadia Mono, Consolas"
+                                                           FontSize="12.5"
+                                                           Margin="0,2,0,2"
+                                                           TextWrapping="NoWrap"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Style="{StaticResource Card}" Grid.Column="1" Margin="7,0,0,0">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource SectionTitle}" Text="💽 Storage"/>
+                                            <TextBlock Style="{StaticResource SectionSub}" Text="Capacità, libero e tipo."/>
+                                            <!-- Riga 1009: era <ItemsControl x:Name="StorageList"/> -->
+                                            <ItemsControl x:Name="StorageList">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding}"
+                                                         Foreground="{StaticResource Accent}"
+                                                         FontFamily="Cascadia Mono, Consolas"
+                                                         FontSize="12.5"
+                                                         Margin="0,2,0,2"
+                                                         TextWrapping="NoWrap"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <DockPanel>
+                                            <StackPanel DockPanel.Dock="Left">
+                                                <TextBlock Style="{StaticResource SectionTitle}" Text="📋 Report hardware"/>
+                                                <TextBlock Style="{StaticResource SectionSub}" Text="Dettaglio sistema in formato testuale"/>
+                                            </StackPanel>
+                                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                                <Button Style="{StaticResource MicroButton}" Content="↻ Aggiorna" Margin="0,0,8,0" Click="HwRefresh_Click"/>
+                                                <Button Style="{StaticResource MicroButton}" Content="📋 Copia" Margin="0,0,8,0" Click="HwCopy_Click"/>
+                                                <Button Style="{StaticResource MicroButton}" Content="💾 Esporta .txt" Click="ExportSystemReport_Click"/>
+                                            </StackPanel>
+                                        </DockPanel>
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Height="420" Margin="0,8,0,0">
+                                            <TextBlock x:Name="HwInfoText" Text="Caricamento info hardware..." TextWrapping="Wrap" Foreground="{StaticResource Text}" FontSize="13" FontFamily="Cascadia Mono, Consolas"/>
+                                        </ScrollViewer>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🔧 Manutenzione"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="SFC, DISM, CHKDSK, reset Windows Update."/>
+                                        <WrapPanel>
+                                            <Button Style="{StaticResource ActionButton}" Content="SFC /scannow"          Margin="0,0,8,8" Click="SfcScan_Click"/>
+                                            <Button Style="{StaticResource ActionButton}" Content="DISM RestoreHealth"    Margin="0,0,8,8" Click="DismRestore_Click"/>
+                                            <Button Style="{StaticResource WarnButton}"   Content="CHKDSK C: (al riavvio)" Margin="0,0,8,8" Click="Chkdsk_Click"/>
+                                            <Button Style="{StaticResource WarnButton}"   Content="Reset Windows Update"   Margin="0,0,8,8" Click="WuReset_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="Reliability Monitor"   Margin="0,0,8,8" Click="OpenRelMon_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="Event Viewer"          Margin="0,0,8,8" Click="OpenEventVwr_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="Resource Monitor"      Margin="0,0,8,8" Click="OpenResMon_Click"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🔕 Notifiche &amp; Suggerimenti"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Disattiva tip, suggerimenti, pubblicità."/>
+                                        <Button Style="{StaticResource ActionButton}" HorizontalAlignment="Left" Content="Spegni tutto" Click="DisableTips_Click"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <!-- ============ DRIVER OPTIMIZATION HUB ============ -->
+                    <Grid x:Name="ViewDrivers" Visibility="Collapsed">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+
+                                <!-- BANNER PREMIUM -->
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14" Background="#161E2E">
+                                    <DockPanel>
+                                        <Border DockPanel.Dock="Left" Width="56" Height="56" CornerRadius="12"
+                            Background="{StaticResource AccentGrad}" Effect="{StaticResource GlowAccent}"
+                            VerticalAlignment="Center" Margin="0,0,16,0">
+                                            <TextBlock Text="🎮" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="Driver Optimization Hub" Foreground="{StaticResource Text}" FontSize="20" FontWeight="Bold"/>
+                                            <TextBlock Text="Clean GPU install · rollback archive · stable vs latest · chipset · audio latency · NVCleanstall · DDU"
+                                   Foreground="{StaticResource TextMuted}" FontSize="12" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                    </DockPanel>
+                                </Border>
+
+                                <!-- GPU CARD -->
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,8">
+                                            <TextBlock Style="{StaticResource SectionTitle}" Text="🎯 Best driver for my GPU"/>
+                                            <Button DockPanel.Dock="Right" Style="{StaticResource MicroButton}" Content="↻ Rileva di nuovo" Click="DrvRescan_Click"/>
+                                        </DockPanel>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Rileva GPU, driver corrente e ti dice il branch consigliato (Game Ready vs Studio, WHQL vs Optional)."/>
+                                        <Border Background="#0E1320" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,10">
+                                            <StackPanel>
+                                                <TextBlock x:Name="DrvGpuName"    Text="Rilevamento..." Foreground="{StaticResource Text}"      FontSize="15" FontWeight="SemiBold"/>
+                                                <TextBlock x:Name="DrvGpuVendor"  Text="--"             Foreground="{StaticResource Accent}"    FontSize="12" Margin="0,3,0,0"/>
+                                                <TextBlock x:Name="DrvGpuVersion" Text="--"             Foreground="{StaticResource TextMuted}" FontSize="12" FontFamily="Cascadia Mono, Consolas" Margin="0,3,0,0"/>
+                                                <TextBlock x:Name="DrvGpuReco"    Text="--"             Foreground="{StaticResource Accent2}"   FontSize="12.5" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,10,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <WrapPanel>
+                                            <Button Style="{StaticResource ActionButton}" Content="🌐 Pagina download ufficiale" Margin="0,0,8,8" Click="DrvOpenVendor_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="📋 Copia info GPU"            Margin="0,0,8,8" Click="DrvCopyGpu_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="🔧 Device Manager"            Margin="0,0,8,8" Click="DrvOpenDevMgr_Click"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- CLEAN GPU INSTALL (DDU) -->
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🧨 Clean GPU install (DDU)"/>
+                                        <TextBlock Style="{StaticResource SectionSub}"
+                               Text="Display Driver Uninstaller di Guru3D. Procedura corretta: 1) scarica DDU  2) riavvia in Safe Mode  3) esegui DDU e scegli 'Clean and restart'  4) reinstalla driver puliti."/>
+                                        <WrapPanel>
+                                            <Button Style="{StaticResource ActionButton}" Content="⬇ Scarica/Avvia DDU"          Margin="0,0,8,8" Click="DduDownloadRun_Click"/>
+                                            <Button Style="{StaticResource WarnButton}"   Content="🔁 Riavvia in Safe Mode"      Margin="0,0,8,8" Click="SafeModeOn_Click"/>
+                                            <Button Style="{StaticResource GoodButton}"   Content="✓ Disattiva Safe Mode (boot normale)" Margin="0,0,8,8" Click="SafeModeOff_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="📂 Apri cartella DDU"         Margin="0,0,8,8" Click="DduOpenFolder_Click"/>
+                                        </WrapPanel>
+                                        <TextBlock x:Name="DduStatus" Text="" Foreground="{StaticResource Accent}" FontSize="11.5" FontFamily="Cascadia Mono, Consolas" Margin="0,6,0,0" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- NVCLEANSTALL -->
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🧪 NVCleanstall (NVIDIA bloat-free)"/>
+                                        <TextBlock Style="{StaticResource SectionSub}"
+                               Text="Installa solo i componenti NVIDIA che ti servono (niente Telemetry, niente GFE). Disponibile solo per GPU NVIDIA."/>
+                                        <WrapPanel>
+                                            <Button Style="{StaticResource ActionButton}" x:Name="NvCsButton" Content="⬇ Scarica/Avvia NVCleanstall" Margin="0,0,8,8" Click="NvCleanstallRun_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="📂 Cartella NVCleanstall" Margin="0,0,8,8" Click="NvCsOpenFolder_Click"/>
+                                        </WrapPanel>
+                                        <TextBlock x:Name="NvCsStatus" Text="" Foreground="{StaticResource Accent}" FontSize="11.5" FontFamily="Cascadia Mono, Consolas" Margin="0,6,0,0" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- DRIVER ROLLBACK ARCHIVE -->
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,8">
+                                            <TextBlock Style="{StaticResource SectionTitle}" Text="🗂 Driver Rollback Archive"/>
+                                            <Button DockPanel.Dock="Right" Style="{StaticResource MicroButton}" Content="↻ Aggiorna" Click="DrvStoreRefresh_Click"/>
+                                        </DockPanel>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Tutti i driver package presenti nel Driver Store (pnputil). Seleziona una vecchia versione e disinstalla per fare rollback."/>
+                                        <DataGrid x:Name="DrvStoreGrid" Height="240" AutoGenerateColumns="False">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="OEM"          Binding="{Binding OemInf}"    Width="100"/>
+                                                <DataGridTextColumn Header="Classe"       Binding="{Binding ClassName}" Width="120"/>
+                                                <DataGridTextColumn Header="Provider"     Binding="{Binding Provider}"  Width="160"/>
+                                                <DataGridTextColumn Header="Driver"       Binding="{Binding OriginalName}" Width="*"/>
+                                                <DataGridTextColumn Header="Versione"     Binding="{Binding Version}"   Width="120"/>
+                                                <DataGridTextColumn Header="Data"         Binding="{Binding Date}"      Width="100"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                        <WrapPanel Margin="0,10,0,0">
+                                            <Button Style="{StaticResource DangerButton}" Content="🗑 Disinstalla pacchetto selezionato (force)" Margin="0,0,8,0" Click="DrvStoreDelete_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="📋 Copia tabella"   Margin="0,0,8,0" Click="DrvStoreCopy_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="💾 Esporta backup .txt" Click="DrvStoreExport_Click"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- CHIPSET -->
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionTitle}" Text="🧩 Chipset Optimization"/>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="INF chipset = base di tutto. Rileva piattaforma e ti porta alla pagina chipset corretta."/>
+                                        <TextBlock x:Name="ChipsetInfo" Foreground="{StaticResource Accent}" FontFamily="Cascadia Mono, Consolas" FontSize="12.5" TextWrapping="Wrap" Margin="0,0,0,8" Text="Rilevamento..."/>
+                                        <WrapPanel>
+                                            <Button Style="{StaticResource ActionButton}" Content="🌐 Scarica chipset driver" Margin="0,0,8,8" Click="ChipsetDownload_Click"/>
+                                            <Button Style="{StaticResource GhostButton}"  Content="⚡ Imposta Ultimate Performance" Margin="0,0,8,8" Click="ChipsetUltimate_Click"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- AUDIO LATENCY RANKING -->
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,8">
+                                            <TextBlock Style="{StaticResource SectionTitle}" Text="🔊 Audio driver latency ranking"/>
+                                            <Button DockPanel.Dock="Right" Style="{StaticResource MicroButton}" Content="↻ Ri-analizza" Click="AudioRescan_Click"/>
+                                        </DockPanel>
+                                        <TextBlock Style="{StaticResource SectionSub}" Text="Stima latenza basata su vendor/driver/età. Score basso = meglio (gaming/produzione)."/>
+                                        <DataGrid x:Name="AudioGrid" Height="200" AutoGenerateColumns="False">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Score" Binding="{Binding Score}"   Width="60"/>
+                                                <DataGridTextColumn Header="Rank"  Binding="{Binding Rank}"    Width="80"/>
+                                                <DataGridTextColumn Header="Device" Binding="{Binding Device}" Width="*"/>
+                                                <DataGridTextColumn Header="Driver" Binding="{Binding Driver}" Width="180"/>
+                                                <DataGridTextColumn Header="Vers."  Binding="{Binding Version}" Width="110"/>
+                                                <DataGridTextColumn Header="Data"   Binding="{Binding Date}"   Width="100"/>
+                                                <DataGridTextColumn Header="Suggerimento" Binding="{Binding Suggestion}" Width="240"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
+                                </Border>
+
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                    <!-- ============ LOG ============ -->
+                    <Grid x:Name="ViewLog" Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Foreground="{StaticResource TextMuted}" FontSize="13" VerticalAlignment="Center"
+                                       Text="Doppio click su una riga per i dettagli."/>
+                            <CheckBox Grid.Column="1" x:Name="LogAutoScroll" Content="Auto-scroll" IsChecked="True" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <Button Grid.Column="2" Style="{StaticResource GhostButton}" Content="📋 Esporta .txt" Margin="0,0,8,0" Click="LogExport_Click"/>
+                            <Button Grid.Column="3" Style="{StaticResource DangerButton}" Content="🗑 Pulisci" Click="LogClear_Click"/>
+                        </Grid>
+                        <Border Grid.Row="1" Style="{StaticResource Card}" Padding="0">
+                            <DataGrid x:Name="LogGridFull" MouseDoubleClick="LogGridFull_DoubleClick">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Ora"     Binding="{Binding TimeText}"  Width="100" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Livello" Binding="{Binding LevelText}" Width="80"  IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Categoria" Binding="{Binding Category}" Width="130" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Messaggio" Binding="{Binding Message}" Width="*"   IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+                    </Grid>
+
+                    <!-- ============ INFO (modernizzata) ============ -->
+                    <Grid x:Name="ViewInfo" Visibility="Collapsed">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,6,0">
+                            <StackPanel>
+
+                                <!-- ============ HERO ============ -->
+                                <Border CornerRadius="14" Padding="26,22" Margin="0,0,0,14"
+                                        BorderBrush="{StaticResource Border}" BorderThickness="1"
+                                        Effect="{StaticResource CardShadow}">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#161E2E" Offset="0"/>
+                                            <GradientStop Color="#121826" Offset="0.6"/>
+                                            <GradientStop Color="#0E2230" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                                <Border Width="44" Height="44" CornerRadius="12"
+                                                        Background="{StaticResource AccentGrad}"
+                                                        Effect="{StaticResource GlowAccent}">
+                                                    <TextBlock Text="🚀" FontSize="22"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Foreground="{StaticResource Text}" FontSize="22" FontWeight="Bold"
+                                                               Text="Centro Guida &amp; Knowledge Base"/>
+                                                    <TextBlock Foreground="{StaticResource Accent}" FontSize="11.5" FontWeight="SemiBold"
+                                                               Text="OGNI TWEAK · COSA FA · QUANDO USARLO · IMPATTO REALE"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <TextBlock Foreground="{StaticResource TextMuted}" FontSize="13" TextWrapping="Wrap"
+                                                       MaxWidth="780" HorizontalAlignment="Left" Margin="0,8,0,0"
+                                                       Text="Tutto quello che fa Albi Optimizer, spiegato senza giri di parole. Ogni voce indica il livello di rischio, l'impatto atteso su FPS / RAM / latenza, e se è reversibile. Inizia dai tweak SICURI: ti porteranno l'80% del guadagno con lo 0% del rischio."/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Border CornerRadius="10" Padding="14,10" Margin="6,0" Background="#1F2937" BorderBrush="{StaticResource BorderHi}" BorderThickness="1">
+                                                <StackPanel>
+                                                    <TextBlock Text="20+" Foreground="{StaticResource Accent}" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="TWEAK" Foreground="{StaticResource TextMuted}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border CornerRadius="10" Padding="14,10" Margin="6,0" Background="#1F2937" BorderBrush="{StaticResource BorderHi}" BorderThickness="1">
+                                                <StackPanel>
+                                                    <TextBlock Text="6" Foreground="{StaticResource Accent2}" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="CATEGORIE" Foreground="{StaticResource TextMuted}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border CornerRadius="10" Padding="14,10" Margin="6,0" Background="#1F2937" BorderBrush="{StaticResource BorderHi}" BorderThickness="1">
+                                                <StackPanel>
+                                                    <TextBlock Text="100%" Foreground="{StaticResource Good}" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="REVERSIBILE" Foreground="{StaticResource TextMuted}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <!-- ============ QUICK NAV CHIPS ============ -->
+                                <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="SALTA ALLA SEZIONE" Style="{StaticResource StatLabel}" Margin="0,0,0,10"/>
+                                        <WrapPanel>
+                                            <Button Style="{StaticResource MicroButton}" Content="⚡ Tools"        Click="NavTools_Click"   Margin="0,0,8,8"/>
+                                            <Button Style="{StaticResource MicroButton}" Content="🔋 Power &amp; CPU" Click="NavPower_Click"   Margin="0,0,8,8"/>
+                                            <Button Style="{StaticResource MicroButton}" Content="🌐 Network"      Click="NavNetwork_Click" Margin="0,0,8,8"/>
+                                            <Button Style="{StaticResource MicroButton}" Content="🧹 Debloat"      Click="NavDebloat_Click" Margin="0,0,8,8"/>
+                                            <Button Style="{StaticResource MicroButton}" Content="🚀 Startup"      Click="NavStartup_Click" Margin="0,0,8,8"/>
+                                            <Button Style="{StaticResource MicroButton}" Content="🩺 Diagnostica"  Click="NavSystem_Click"  Margin="0,0,8,8"/>
+                                            <Button Style="{StaticResource MicroButton}" Content="🛠 Servizi"      Click="NavServices_Click" Margin="0,0,8,8"/>
+                                            <Button Style="{StaticResource MicroButton}" Content="📊 Processi"     Click="NavProc_Click"    Margin="0,0,8,8"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- ============ CARD GRID ============ -->
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="14"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="14"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="14"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="14"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="14"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="14"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- 🎮 Gaming Mode -->
+                                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#0E2E22" BorderBrush="{StaticResource Good}" BorderThickness="1">
+                                                    <TextBlock Text="SICURO" Foreground="{StaticResource Good}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="🎮" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Gaming Mode" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="Chiude le app non essenziali e libera CPU + 1–3 GB di RAM in un click. Ideale prima di una sessione competitive."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="78" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: ALTO" Foreground="{StaticResource Accent}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- ⚡ Libera RAM -->
+                                    <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#0E2E22" BorderBrush="{StaticResource Good}" BorderThickness="1">
+                                                    <TextBlock Text="SICURO" Foreground="{StaticResource Good}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="⚡" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Libera RAM" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="EmptyWorkingSet su tutti i processi. Effetto immediato ma temporaneo — la RAM torna a riempirsi col tempo."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="55" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: MEDIO" Foreground="{StaticResource Warn}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 🗑 Pulizia Temp -->
+                                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#0E2E22" BorderBrush="{StaticResource Good}" BorderThickness="1">
+                                                    <TextBlock Text="SICURO" Foreground="{StaticResource Good}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="🗑" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Pulizia Temp" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="Svuota %TEMP%, Windows\Temp e Prefetch. Liberi tipicamente 500 MB – 5 GB. Niente perdita di dati utente."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="40" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: MEDIO" Foreground="{StaticResource Warn}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 🧠 Memory Compression -->
+                                    <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#123040" BorderBrush="{StaticResource Warn}" BorderThickness="1">
+                                                    <TextBlock Text="MEDIO" Foreground="{StaticResource Warn}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="🧠" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Memory Compression" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="Comprime pagine RAM inattive. Tienila ON se hai &lt;16 GB. Se hai 32+ GB e CPU debole, prova a disattivarla."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="50" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: MEDIO" Foreground="{StaticResource Warn}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 🛡 Privacy Tweaks -->
+                                    <Border Grid.Row="4" Grid.Column="0" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#0E2E22" BorderBrush="{StaticResource Good}" BorderThickness="1">
+                                                    <TextBlock Text="SICURO" Foreground="{StaticResource Good}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="🛡" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Privacy Tweaks" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="Disabilita advertising ID, telemetria diagnostica, Cortana e suggerimenti contestuali. Zero impatto sulle app."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="35" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: BASSO" Foreground="{StaticResource Info}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 🎨 Visual Effects -->
+                                    <Border Grid.Row="4" Grid.Column="2" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#123040" BorderBrush="{StaticResource Warn}" BorderThickness="1">
+                                                    <TextBlock Text="MEDIO" Foreground="{StaticResource Warn}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="🎨" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Visual Effects" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="Spegne animazioni, ombre e trasparenze. La UI diventa cruda ma la reattività vola — perfetto su PC datati."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="60" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: ALTO" Foreground="{StaticResource Accent}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 💽 SSD TRIM / Defrag -->
+                                    <Border Grid.Row="6" Grid.Column="0" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#0E2E22" BorderBrush="{StaticResource Good}" BorderThickness="1">
+                                                    <TextBlock Text="SICURO" Foreground="{StaticResource Good}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="💽" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="SSD TRIM / Defrag" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="Windows riconosce SSD vs HDD: applica TRIM al primo, defrag classico al secondo. Eseguilo 1 volta al mese."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="30" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: BASSO" Foreground="{StaticResource Info}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 🖱 Mouse Acceleration -->
+                                    <Border Grid.Row="6" Grid.Column="2" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#0E2E22" BorderBrush="{StaticResource Good}" BorderThickness="1">
+                                                    <TextBlock Text="SICURO" Foreground="{StaticResource Good}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="🖱" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Mouse Acceleration" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="Disattiva l'accelerazione: movimento 1:1 tra mouse e cursore. Essenziale per FPS competitivi (CS, Valorant, Apex)."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="45" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: MEDIO" Foreground="{StaticResource Warn}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 🎬 Game DVR -->
+                                    <Border Grid.Row="8" Grid.Column="0" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#0E2E22" BorderBrush="{StaticResource Good}" BorderThickness="1">
+                                                    <TextBlock Text="SICURO" Foreground="{StaticResource Good}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="🎬" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Game DVR / Xbox Bar" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="Disattiva la registrazione in background di Windows. Guadagni misurati: +5/15% FPS in CPU-bound games."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="65" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: ALTO" Foreground="{StaticResource Accent}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- ⚡ Power Plans -->
+                                    <Border Grid.Row="8" Grid.Column="2" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#123040" BorderBrush="{StaticResource Warn}" BorderThickness="1">
+                                                    <TextBlock Text="MEDIO" Foreground="{StaticResource Warn}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="🔋" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Power Plans" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="Balanced = default. High Performance = boost CPU sempre attivo. Ultimate = solo desktop su rete elettrica."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="70" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: ALTO" Foreground="{StaticResource Accent}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 🎮 GPU HAGS -->
+                                    <Border Grid.Row="10" Grid.Column="0" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#3A1414" BorderBrush="{StaticResource Bad}" BorderThickness="1">
+                                                    <TextBlock Text="AVANZATO" Foreground="{StaticResource Bad}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="🎮" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="GPU HAGS + TCP + DNS" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="Hardware GPU Scheduling, TCP tuning, DNS pubblici (Cloudflare/Google/Quad9). Più throughput, meno latenza. Richiede riavvio."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="85" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: ALTO" Foreground="{StaticResource Accent}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 🧩 Core Parking / USB / Ibernazione -->
+                                    <Border Grid.Row="10" Grid.Column="2" Style="{StaticResource Card}" Padding="18">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Right" CornerRadius="6" Padding="8,3" Background="#3A1414" BorderBrush="{StaticResource Bad}" BorderThickness="1">
+                                                    <TextBlock Text="AVANZATO" Foreground="{StaticResource Bad}" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="🧩" FontSize="24" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Core Parking · USB · Ibernazione" Margin="10,0,0,0" Foreground="{StaticResource Text}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <TextBlock Margin="0,10,0,8" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                                                       Text="Disattiva parking dei core, USB selective suspend e ibernazione (libera 4–16 GB sul SSD). Su laptop a batteria pesa sull'autonomia."/>
+                                            <Grid Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ProgressBar Value="55" Maximum="100"/>
+                                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Impatto: MEDIO" Foreground="{StaticResource Warn}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <!-- ============ FAQ ============ -->
+                                <Border Style="{StaticResource Card}" Padding="22" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="DOMANDE FREQUENTI" Style="{StaticResource StatLabel}" Margin="0,0,0,12"/>
+                                        <Expander Header="È sicuro? Posso rompere Windows?" Foreground="{StaticResource Text}" FontSize="13.5" FontWeight="SemiBold" Margin="0,0,0,8">
+                                            <TextBlock Margin="0,8,0,4" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap" FontWeight="Normal"
+                                                       Text="I profili SICURO non toccano nulla di critico. Per i profili AVANZATO crea un punto di ripristino: trovi il pulsante in Tools. Tutto è comunque reversibile con 'Ripristina default'."/>
+                                        </Expander>
+                                        <Expander Header="Quanto guadagno davvero in FPS?" Foreground="{StaticResource Text}" FontSize="13.5" FontWeight="SemiBold" Margin="0,0,0,8">
+                                            <TextBlock Margin="0,8,0,4" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap" FontWeight="Normal"
+                                                       Text="Dipende dal bottleneck. Su CPU-bound (Valorant, CS2, MMO) un Gaming Mode + Game DVR off + High Performance porta tipicamente +8/20% FPS medi e -20/40% sui frametime spike. Su GPU-bound i guadagni si vedono soprattutto sui 1% low."/>
+                                        </Expander>
+                                        <Expander Header="Devo essere Amministratore?" Foreground="{StaticResource Text}" FontSize="13.5" FontWeight="SemiBold" Margin="0,0,0,8">
+                                            <TextBlock Margin="0,8,0,4" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap" FontWeight="Normal"
+                                                       Text="Sì per servizi, registry, power plans, network. Senza admin l'app funziona solo in lettura (monitor, info)."/>
+                                        </Expander>
+                                        <Expander Header="Come torno indietro?" Foreground="{StaticResource Text}" FontSize="13.5" FontWeight="SemiBold">
+                                            <TextBlock Margin="0,8,0,4" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap" FontWeight="Normal"
+                                                       Text="Ogni sezione ha 'Ripristina default'. Per le modifiche di rete c'è 'Network Reset'. Per i servizi disabilitati puoi sempre rimetterli su 'Automatic' dalla pagina Servizi."/>
+                                        </Expander>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- ============ PRO TIPS ============ -->
+                                <Border CornerRadius="10" Padding="22" Margin="0,0,0,4"
+                                        Background="#0E2230" BorderBrush="{StaticResource Warn}" BorderThickness="1"
+                                        Effect="{StaticResource CardShadow}">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                            <TextBlock Text="💡" FontSize="20" VerticalAlignment="Center"/>
+                                            <TextBlock Text="PRO TIPS" Foreground="{StaticResource Warn}" FontSize="13" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Foreground="{StaticResource Text}" TextWrapping="Wrap" FontSize="13" LineHeight="22">
+                                            <Run Text="• "/><Run Text="Avvia sempre come Amministratore" FontWeight="SemiBold"/><Run Text=" per sbloccare tutte le funzioni."/><LineBreak/>
+                                            <Run Text="• "/><Run Text="Crea un punto di ripristino" FontWeight="SemiBold"/><Run Text=" prima dei profili Aggressivo / Network Reset."/><LineBreak/>
+                                            <Run Text="• Aggiorna i "/><Run Text="driver GPU" FontWeight="SemiBold"/><Run Text=" prima di lamentarti degli FPS — è il singolo cambio più impattante."/><LineBreak/>
+                                            <Run Text="• Su "/><Run Text="laptop a batteria" FontWeight="SemiBold"/><Run Text=" evita Ultimate Performance: surriscalda e dimezza l'autonomia."/><LineBreak/>
+                                            <Run Text="• Apri "/><Run Text="Diagnostica" FontWeight="SemiBold"/><Run Text=" prima e dopo i tweak per misurare l'effetto reale."/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                    <!-- Sensori rimossi -->
+                </Grid>
+            </DockPanel>
+        </Grid>
+
+        <!-- ============ BOTTOM LOG STRIP ============ -->
+        <Border Grid.Row="1" Grid.Column="1" Background="#0E1320" BorderBrush="{StaticResource Border}" BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0" LastChildFill="True" Margin="16,8">
+                    <Button DockPanel.Dock="Right" Style="{StaticResource MicroButton}" Content="↗ Apri log" Click="LogOpen_Click" Margin="6,0,0,0"/>
+                    <Button DockPanel.Dock="Right" x:Name="LogToggleBtn" Style="{StaticResource MicroButton}" Content="▼ Espandi" Click="LogToggle_Click"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse x:Name="StatusDot" Width="9" Height="9" Fill="{StaticResource Good}" VerticalAlignment="Center" Margin="0,0,9,0"/>
+                        <TextBlock x:Name="StatusText" Text="Pronto" Foreground="{StaticResource Text}" FontSize="12.5" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="AdminText" Text="" Foreground="{StaticResource Warn}" FontSize="12" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                    </StackPanel>
+                </DockPanel>
+                <Border Grid.Row="1" x:Name="LogPanel" Height="200" BorderBrush="{StaticResource Border}" BorderThickness="0,1,0,0" Visibility="Collapsed">
+                    <DataGrid x:Name="LogGridMini" RowHeight="26">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Ora"     Binding="{Binding TimeText}"  Width="100" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Livello" Binding="{Binding LevelText}" Width="80"  IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Categoria" Binding="{Binding Category}" Width="130" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Messaggio" Binding="{Binding Message}" Width="*"   IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

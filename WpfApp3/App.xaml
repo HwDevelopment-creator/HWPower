@@ -1,0 +1,14 @@
+﻿<Application x:Class="WpfApp3.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <!--
+                Risorse application-wide.
+                I temi/brush della UI principale vivono in MainWindow.xaml.Resources
+                per restare scopati alla finestra e non inquinare l'intera app.
+            -->
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
+

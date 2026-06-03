@@ -1,0 +1,89 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<!--
+    Albi Optimizer - project file (polished)
+    ==========================================
+    Target:        .NET 8 Windows (WPF)
+    AssemblyName:  "Albi Optimizer"
+    Polish pass:
+      - PropertyGroup raggruppati per scopo (Identita' / Build / Quality).
+      - Ottimizzazioni Release esplicite (ReadyToRun, TieredPGO).
+      - Asset embeddati con CopyToOutputDirectory PreserveNewest.
+      - SatelliteResourceLanguages limitato a it+en per ridurre il payload.
+  -->
+
+	<!-- ===== Identita' applicazione ===== -->
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+
+		<AssemblyName>Albi Optimizer</AssemblyName>
+		<RootNamespace>AlbiOptimization</RootNamespace>
+		<ApplicationIcon>Configuration\Resources\ICO ALBERT.ico</ApplicationIcon>
+
+		<AssemblyVersion>2.9.0.0</AssemblyVersion>
+		<FileVersion>2.9.0.0</FileVersion>
+		<Version>2.9.0</Version>
+		<Product>Albi Optimizer</Product>
+		<Company>HWDevelopment</Company>
+		<Copyright>Copyright (c) HWDevelopment</Copyright>
+	</PropertyGroup>
+
+	<!-- ===== Build / linguaggio ===== -->
+	<PropertyGroup>
+		<Platforms>AnyCPU;x64</Platforms>
+		<BaseOutputPath>C:\Users\frang\source\repos</BaseOutputPath>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<Deterministic>true</Deterministic>
+		<DebugType>portable</DebugType>
+		<SatelliteResourceLanguages>it;en</SatelliteResourceLanguages>
+	</PropertyGroup>
+
+	<!-- ===== Qualita' / analyzer ===== -->
+	<PropertyGroup>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+		<AnalysisLevel>latest-recommended</AnalysisLevel>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+	</PropertyGroup>
+
+	<!-- ===== Ottimizzazioni Release ===== -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<Optimize>true</Optimize>
+		<TieredCompilation>true</TieredCompilation>
+		<TieredPGO>true</TieredPGO>
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<DebugSymbols>true</DebugSymbols>
+	</PropertyGroup>
+
+	<!-- ===== Dipendenze NuGet ===== -->
+	<ItemGroup>
+		<PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
+		<PackageReference Include="System.Management" Version="10.0.2" />
+	</ItemGroup>
+
+	<!-- ===== Asset runtime (icone, immagini di brand) ===== -->
+	<ItemGroup>
+		<Content Include="Configuration\Assets\**\*.*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<!-- ===== Folder hints ===== -->
+	<ItemGroup>
+		<Folder Include="SourceCode\" />
+		<Folder Include="SourceCode\Models\" />
+		<Folder Include="SourceCode\Services\" />
+		<Folder Include="SourceCode\Utilities\" />
+		<Folder Include="SourceCode\Views\" />
+		<Folder Include="Configuration\" />
+		<Folder Include="Configuration\Assets\" />
+		<Folder Include="Configuration\Properties\" />
+		<Folder Include="Configuration\Resources\" />
+	</ItemGroup>
+
+</Project>
